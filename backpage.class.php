@@ -786,7 +786,7 @@ private $backpage_usa_cities = array(
                                           );   
     
     //Postings may be accessed from a user account on backpage.com using this email address.
-    private $user_email_address = "business@glo-con.com"; 
+    private $user_email_address = "youremail@address.com"; 
  
  
     
