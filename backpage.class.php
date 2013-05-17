@@ -3,6 +3,7 @@
 /*
  @class name: backpage 
  @author: Gowri sankar.R
+ @author Url: http://code-cocktail.in/
  @description: backpage class is used to generate the xml feed for backpage.com
  @version: 0.1
 */
