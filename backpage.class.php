@@ -790,6 +790,19 @@ private $backpage_usa_cities = array(
     private $user_email_address = "youremail@address.com"; 
  
  
+ 
+    private $allowReplies_options = array('Show Email','Anonymous','No');
+
+    private $adPlacedBy_options = array('Owner/Property Manager','Agency/Locator Service');
+ 
+    private $feeStatus_options = array('Fee','No Fee');
+    
+    private $bedroom_options = array('Studio','1','2','3','4','5','6','7','8');
+    
+    private $roommates_options = array('Male Only','Male Preferred','Female Only','Female Preferred','Male or Female OK');
+    
+    private $petsAccepted_options = array('Cats Ok','Dogs Ok');
+    
     
     public function generate_backpage_feed($data=array()){
         
@@ -810,9 +823,40 @@ private $backpage_usa_cities = array(
             $feed .= '<backpage:site>'.$this->get_backpage_site_url($site_city).'</backpage:site>';
             $feed .= '<backpage:id>'.$item['id'].'</backpage:id>';
             $feed .= '<backpage:category>'.$this->get_backpage_category($item['category']).'</backpage:category>';
-            $feed .= '<backpage:SourceUrl>'.$item['SourceUrl'].'</backpage:SourceUrl>';
+
+            if($item['SourceUrl']){
+                $feed .= '<backpage:SourceUrl>'.$item['SourceUrl'].'</backpage:SourceUrl>'; //optional field
+            }
+            
+            if($item['since']){
+                $feed .= $this->get_backpage_since($item['since']);  //optional field
+            }
+            
+            $feed .= $this->get_backpage_adPlacedBy($item);
+            $feed .= $this->get_backpage_feeStatus($item);
+            
+            if($item['roommates']){
+                $feed .= $this->get_backpage_roommates($item['roommates']); //optional field
+            }
+
+            if($item['mapAddress']){
+                $feed .= $this->get_backpage_mapAddress($item['mapAddress']); //optional field
+            }
+            
+            if($item['mapZip']){
+                $feed .= $this->get_backpage_mapZip($item['mapZip']); //optional field
+            }            
+
+            if($item['petsAccepted']){
+                $feed .= $this->get_backpage_petsAccepted($item['petsAccepted']); //optional field
+            }
+            
+            
+            
+            
+            
             $feed .= '<backpage:replyEmail>'.$item['replyEmail'].'</backpage:replyEmail>';
-            $feed .= '<backpage:allowReplies>No</backpage:allowReplies>';
+            $feed .= '<backpage:allowReplies>'.$this->get_backapge_allowReplies($item['allowReplies']).'</backpage:allowReplies>';
             $feed .= '<backpage:region>'.$item['region'].'</backpage:region>';
             $feed .= '<backpage:country>'.$item['country'].'</backpage:country>';
             $feed .= '<title>'.$this->get_backapge_item_title($item['title']).'</title>';
@@ -879,7 +923,7 @@ private $backpage_usa_cities = array(
     }
     
     private function optional_backapge_field_data_validate($data){
-        return $this->limit_length(strip_tags($title),255);
+        return $this->limit_length(strip_tags($data),255);
     }
     
     private function get_clean_title($string){
@@ -887,5 +931,131 @@ private $backpage_usa_cities = array(
        $string = preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
     
        return preg_replace('/-+/', '-', $string); // Replaces multiple hyphens with single one.
+    }
+    
+    private function get_backapge_allowReplies($allowReplies){
+     
+     if(in_array($allowReplies,(array)$this->allowReplies_options)){
+        return $allowReplies;
+     }
+     else{
+        return 'No';
+     }
+        
+    }
+    
+    private function get_backpage_since($time){
+     
+     if($time){ 
+      return '<backpage:since>'.date("Y-m-d+H:i",$time).'</backpage:since>';  
+     }
+     else{
+      return;  
+     }
+          
+    }
+    
+    private function get_backpage_adPlacedBy($item){
+
+     if(in_array($item['adPlacedBy'],(array)$this->adPlacedBy_options)){
+        return '<backpage:adPlacedBy>'.$item['adPlacedBy'].'</backpage:adPlacedBy>';
+     }
+     else{
+        
+        if($item['category']=='ApartmentsForRent'){ // required field for ApartmentsForRent category
+             $adPlacedBy = (array)$this->adPlacedBy_options;
+            return '<backpage:adPlacedBy>'.$adPlacedBy[0].'</backpage:adPlacedBy>';    
+        }
+        else{
+            return;
+        }
+        
+     }        
+        
+    }
+
+    
+    private function get_backpage_feeStatus($item){
+
+     if(in_array($item['feeStatus'],(array)$this->feeStatus_options)){
+        return '<backpage:feeStatus>'.$item['feeStatus'].'</backpage:feeStatus>';
+     }
+     else{
+        
+        if($item['category']=='ApartmentsForRent'){ // required field for ApartmentsForRent category
+             $feeStatus = (array)$this->feeStatus_options;
+            return '<backpage:feeStatus>'.$feeStatus[0].'</backpage:feeStatus>';    
+        }
+        else{
+            return;
+        }
+        
+     }        
+        
+    }    
+
+
+
+
+    private function get_backpage_roommates($roommates){
+     
+     if(in_array($roommates,(array)$this->roommates_options)){
+        return '<backpage:roommates>'.$roommates.'</backpage:roommates>';  
+     }
+     else{
+        return;
+     }
+        
+    }    
+
+    private function get_backpage_mapAddress($mapAddress){
+     
+     if($mapAddress){ 
+      return '<backpage:mapAddress>'.$mapAddress.'</backpage:mapAddress>';  
+     }
+     else{
+      return;  
+     }
+          
+    }
+
+    private function get_backpage_mapZip($mapZip){
+     
+     if($mapZip){ 
+      return '<backpage:mapZip>'.$mapZip.'</backpage:mapZip>';  
+     }
+     else{
+      return;  
+     }
+          
+    }
+
+    private function get_backpage_petsAccepted($petsAccepted){
+        
+        if(is_array('petsAccepted')){
+            
+            foreach($petsAccepted as $value){
+                
+                if(in_array($value,(array)$this->petsAccepted_options)){
+                    $pets .= '<backpage:petsAccepted>'.$value.'</backpage:petsAccepted>';
+                }
+                
+            }
+            return $pets;
+        }
+        else{
+            return;
+        }
+        
+    }
+    
+    private function get_backpage_price($price){
+        
+        if(is_numeric($price)){
+            
+        }
+        else{
+            return;
+        }
     }
 }
