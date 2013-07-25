@@ -851,7 +851,9 @@ private $backpage_usa_cities = array(
                 $feed .= $this->get_backpage_petsAccepted($item['petsAccepted']); //optional field
             }
             
-            
+            if($item['price']){
+            	$feed .= $this->get_backpage_price($item['price']); //optional field
+            }
             
             
             
@@ -1052,7 +1054,7 @@ private $backpage_usa_cities = array(
     private function get_backpage_price($price){
         
         if(is_numeric($price)){
-            
+        	return '<backpage:price>'.number_format($price, 2, '.', '').'</backpage:price>';        	
         }
         else{
             return;
