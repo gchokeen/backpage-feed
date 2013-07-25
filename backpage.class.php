@@ -803,6 +803,8 @@ private $backpage_usa_cities = array(
     
     private $petsAccepted_options = array('Cats Ok','Dogs Ok');
     
+    private $workStatus_options = array('Full-time','Part-time	','Temp/Contract','Internship');
+    
     
     public function generate_backpage_feed($data=array()){
         
@@ -854,6 +856,11 @@ private $backpage_usa_cities = array(
             if($item['price']){
             	$feed .= $this->get_backpage_price($item['price']); //optional field
             }
+            
+            if($item['workStatus']){
+            	$feed .= $this->get_backpage_workStatus($item['workStatus']); //optional field array
+            }
+                        
             
             
             
@@ -1060,4 +1067,26 @@ private $backpage_usa_cities = array(
             return;
         }
     }
+    
+    private function get_backpage_workStatus($workStatus){
+    
+    	if(is_array('workStatus')){
+    
+    		foreach($petsAccepted as $value){
+    
+    			if(in_array($value,(array)$this->workStatus_options)){
+    				$work_status .= '<backpage:workStatus>'.$value.'</backpage:workStatus>';
+    			}
+    
+    		}
+    		return $work_status;
+    	}
+    	else{
+    		return;
+    	}
+    
+    }
+
+    
+  
 }
